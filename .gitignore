@@ -9,12 +9,13 @@ lerna-debug.log*
 
 node_modules
 dist
+build
 dist-ssr
 *.local
 
-# Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+.VSCodeCounter
 .idea
 .DS_Store
 *.suo
@@ -22,3 +23,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+.cspellcache
+.eslintcache
+
+.devcontainer/data
+.devcontainer/postgresql_data
