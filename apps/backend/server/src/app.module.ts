@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
+import { EmployeeModule } from './modules/employee/employee.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -22,7 +23,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
           .default('development'),
         DB_PORT: Joi.number().default(5432),
         DB_HOST: Joi.string().ip(),
-        DB_TYPE: Joi.string().valid('mysql', 'postgres'),
+        DB_TYPE: Joi.string().valid('postgres'),
         DB_DATABASE: Joi.string().required(),
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
@@ -41,6 +42,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
     }),
     AuthModule,
     RoleModule,
+    EmployeeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
