@@ -4,8 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "commit": "cz-git"
+    "build": "turbo build",
+    "dev": "turbo dev --filter=@smart-agriculture-platform-monorepo/web --filter=@smart-agriculture-platform-monorepo/server",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "commit": "cz"
   },
   "keywords": [],
   "author": "zhangjunpeng",
@@ -23,6 +26,7 @@
     "eslint-plugin-prettier": "^5.5.5",
     "husky": "^9.1.7",
     "prettier": "^3.8.1",
+    "turbo": "^2.8.12",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1"
   },
