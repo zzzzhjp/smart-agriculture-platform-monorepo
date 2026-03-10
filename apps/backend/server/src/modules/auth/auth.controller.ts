@@ -1,22 +1,21 @@
-import { Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('crm')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
-  @Post()
-  async register() {
-    return '注册成功';
+  @Post('/login')
+  async login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto);
   }
 
-  /**
-   * 登录
-   * @param loginDto 登录Dto
-   * @returns 登录结果
-   */
-  @Post('/login')
-  async login() {
-    return '已经登录';
+  @UseGuards(JwtAuthGuard)
+  @Get('/profile')
+  async profile(@Req() request: Request & { user: unknown }) {
+    return request.user;
   }
 }

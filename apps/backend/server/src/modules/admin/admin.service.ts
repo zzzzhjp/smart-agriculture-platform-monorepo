@@ -11,11 +11,18 @@ export class AdminService {
   ) {}
 
   async findAll(): Promise<Admin[]> {
-    return this.adminRepository.find();
+    return this.adminRepository.find({ relations: ['role'] });
   }
 
   async findOne(id: number): Promise<Admin> {
-    return this.adminRepository.findOne({ where: { id } });
+    return this.adminRepository.findOne({ where: { id }, relations: ['role'] });
+  }
+
+  async findByAccount(admin_account: string): Promise<Admin> {
+    return this.adminRepository.findOne({
+      where: { admin_account },
+      relations: ['role'],
+    });
   }
 
   async create(admin_account: string, admin_password: string): Promise<Admin> {

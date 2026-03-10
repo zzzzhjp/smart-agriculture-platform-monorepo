@@ -1,6 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminService } from './admin.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('crm/admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
@@ -11,7 +19,7 @@ export class AdminController {
   }
 
   @Get('/get/:id')
-  findOne(id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.adminService.findOne(id);
   }
 }

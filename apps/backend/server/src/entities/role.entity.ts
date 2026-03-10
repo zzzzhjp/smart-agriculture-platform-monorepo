@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Admin } from './admin.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({
   schema: 'crm',
@@ -13,4 +14,7 @@ export class Role {
 
   @Column()
   role_enabled: boolean;
+
+  @OneToMany(() => Admin, (admin) => admin.role)
+  admins: Admin[];
 }

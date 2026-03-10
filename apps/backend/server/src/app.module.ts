@@ -3,11 +3,12 @@ import * as Joi from 'joi';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
 import { EmployeeModule } from './modules/employee/employee.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -28,6 +29,8 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_SYNC: Joi.boolean().default(false),
+        JWT_SECRET: Joi.string().default('smart-agriculture-secret'),
+        JWT_EXPIRES_IN: Joi.string().default('7d'),
       }),
     }),
     TypeOrmModule.forRoot({
@@ -41,6 +44,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
       synchronize: true,
     }),
     AuthModule,
+    AdminModule,
     RoleModule,
     EmployeeModule,
   ],
