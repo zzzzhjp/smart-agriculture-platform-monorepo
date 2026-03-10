@@ -10,7 +10,30 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@views/*": [
+        "./src/views/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@interface/*": [
+        "./src/interface/*"
+      ],
+      "@assets/*": [
+        "./src/assets/*"
+      ],
+      "@api/*": [
+        "./src/api/*"
+      ]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]
 }
