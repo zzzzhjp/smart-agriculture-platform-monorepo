@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
 import { EmployeeModule } from './modules/employee/employee.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { PermissionModule } from './modules/permission/permission.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -47,6 +48,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
     AdminModule,
     RoleModule,
     EmployeeModule,
+    PermissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

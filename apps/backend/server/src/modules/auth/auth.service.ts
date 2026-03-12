@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+﻿import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
@@ -23,13 +23,13 @@ export class AuthService {
     });
 
     if (!admin || admin.admin_password !== admin_password) {
-      throw new UnauthorizedException('�˺Ż��������');
+      throw new UnauthorizedException('账号或密码错误');
     }
 
     return admin;
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto): Promise<string> {
     const admin = await this.validateAdmin(
       loginDto.admin_account,
       loginDto.admin_password,
@@ -42,19 +42,6 @@ export class AuthService {
       role_name: admin.role?.role_name,
     };
 
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-      admin: {
-        id: admin.id,
-        admin_account: admin.admin_account,
-        role: admin.role
-          ? {
-              id: admin.role.id,
-              role_name: admin.role.role_name,
-              role_enabled: admin.role.role_enabled,
-            }
-          : null,
-      },
-    };
+    return this.jwtService.signAsync(payload);
   }
 }

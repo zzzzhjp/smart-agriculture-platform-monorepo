@@ -1,13 +1,6 @@
-<script setup lang="ts">
-
+﻿<script setup lang="ts">
 </script>
 
 <template>
-  <div>
-    
-  </div>
+  <router-view />
 </template>
-
-<style lang="scss" scoped>
-
-</style>

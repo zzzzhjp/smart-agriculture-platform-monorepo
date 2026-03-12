@@ -1,6 +1,24 @@
-import { createApp } from 'vue'
+﻿import { createApp } from 'vue'
 import App from './App.vue'
-import PrimeVue from 'primevue/config'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+const app = createApp(App)
+
+//router
+import router from '@router/index'
+
+//scss
+import '@assets/main.scss'
+
+//pinia
+import pinia from '@store/index'
+
+//element-plus
+import 'element-plus/theme-chalk/dark/css-vars.css'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
 
 //cesium
 import * as Cesium from 'cesium'
@@ -16,6 +34,8 @@ declare global {
 window.CESIUM_BASE_URL = CESIUM_BASE_URL
 Cesium.Ion.defaultAccessToken = CESIUM_ACCESS_TOKEN
 
-const app = createApp(App)
-app.use(PrimeVue)
+app.use(ElementPlus)
+app.use(pinia)
+app.use(router)
 app.mount('#app')
+
