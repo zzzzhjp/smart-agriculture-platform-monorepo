@@ -15,6 +15,16 @@ const staticRoutes: RouteRecordRaw[] = [
         path: "/",
         redirect: "/dashboard/home",
     },
+    {
+        path: "/cesium",
+        name: "Cesium",
+        component: () => import("@/views/cesiumHome/index.vue")
+    },
+    {
+        path: "/hr",
+        name: "HR",
+        component: () => import("@/views/hr/employee/index.vue")
+    }
 ]
 
 const router = createRouter({
@@ -68,7 +78,9 @@ function mapBackendRoute(route: UserRouterChildren, parentPath?: string): RouteR
     }
 
     if (route.children?.length) {
-        record.children = route.children.map((child) => mapBackendRoute(child, route.path))
+        ; (record as RouteRecordRaw & { children?: RouteRecordRaw[] }).children = route.children.map((child) =>
+            mapBackendRoute(child, route.path)
+        )
     }
 
     return record
@@ -146,6 +158,5 @@ router.beforeEach(async (to) => {
 })
 
 export default router
-
 
 

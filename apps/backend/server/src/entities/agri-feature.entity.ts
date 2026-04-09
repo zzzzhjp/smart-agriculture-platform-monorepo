@@ -31,6 +31,15 @@ export class AgriFeature {
   @Column({ type: 'text', nullable: true })
   subtype: string | null;
 
+  @Column({ type: 'bigint', name: 'farm_id', nullable: true })
+  farmId: string | null;
+
+  @Column({ type: 'bigint', name: 'parcel_id', nullable: true })
+  parcelId: string | null;
+
+  @Column({ type: 'bigint', name: 'owner_org_id', nullable: true })
+  ownerOrgId: string | null;
+
   @Column({ type: 'text', name: 'owner_org', nullable: true })
   ownerOrg: string | null;
 
@@ -70,6 +79,16 @@ export class AgriFeature {
   })
   @Index('idx_agri_feature_geom_z', { spatial: true })
   geomZ: unknown;
+
+  @Column({
+    type: 'geometry',
+    name: 'bbox',
+    spatialFeatureType: 'Polygon',
+    srid: 4326,
+    nullable: true,
+  })
+  @Index('idx_agri_feature_bbox', { spatial: true })
+  bbox: unknown;
 
   @Column({ type: 'double precision', name: 'elev_m', nullable: true })
   elevM: number | null;
@@ -119,6 +138,12 @@ export class AgriFeature {
 
   @Column({ type: 'jsonb', default: () => "'{}'::jsonb" })
   attrs: Record<string, unknown>;
+
+  @Column({ type: 'bigint', name: 'created_by', nullable: true })
+  createdBy: string | null;
+
+  @Column({ type: 'bigint', name: 'updated_by', nullable: true })
+  updatedBy: string | null;
 
   @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   createdAt: Date;

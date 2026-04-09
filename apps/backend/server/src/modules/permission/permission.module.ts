@@ -6,6 +6,9 @@ import { Permission } from '../../entities/permission.entity';
 import { RolePermission } from '../../entities/role-permission.entity';
 import { RoleScope } from '../../entities/role-scope.entity';
 import { Role } from '../../entities/role.entity';
+import { FeatureAclGuard } from './guards/feature-acl.guard';
+import { PermissionGuard } from './guards/permission.guard';
+import { ScopeGuard } from './guards/scope.guard';
 import { PermissionController } from './permission.controller';
 import { PermissionService } from './permission.service';
 
@@ -21,7 +24,8 @@ import { PermissionService } from './permission.service';
     ]),
   ],
   controllers: [PermissionController],
-  providers: [PermissionService],
-  exports: [PermissionService],
+  providers: [PermissionService, PermissionGuard, ScopeGuard, FeatureAclGuard],
+  exports: [PermissionService, PermissionGuard, ScopeGuard, FeatureAclGuard],
 })
 export class PermissionModule {}
+
