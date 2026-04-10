@@ -5,46 +5,99 @@
     <div class="tools-panel">
       <button
         class="action-btn path-btn"
-        :class="{ 'is-active': isDrawing }"
+        :class="{ 'is-active': activeMode === 'path' }"
         @click="startDrawFlightPath"
       >
-        {{ isDrawing ? '左键画点画线，右键结束' : '规划无人机路径' }}
+        {{ activeMode === 'path' ? '左键画点画线，右键结束' : '规划无人机路径' }}
+      </button>
+
+      <button
+        class="action-btn area-btn"
+        :class="{ 'is-active': activeMode === 'area' }"
+        @click="startMeasureArea"
+      >
+        {{ activeMode === 'area' ? '左键画点成面，右键结束' : '测量面积' }}
       </button>
     </div>
 
     <div class="tips-card">
-      <div class="tips-title">无人机路径规划</div>
-      <div class="tips-text">左键依次落点并自动连线，右键结束本次规划。</div>
-      <div v-if="flightSummary" class="result-text">{{ flightSummary }}</div>
+      <div class="tips-title">Cesium 地图工具</div>
+      <div class="tips-text">
+        {{ activeTip }}
+      </div>
+      <div v-if="flightSummary" class="result-text path-result">{{ flightSummary }}</div>
+      <div v-if="areaSummary" class="result-text area-result">{{ areaSummary }}</div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import * as Cesium from 'cesium';
 import { initViewer, viewer } from '@/cesiumTool/createViewer';
 import { DrawFlightPathAction, type DrawFlightPathResult } from '@/cesiumTool/drawFlightPath';
+import { DrawPolygonAction, type DrawPolygonResult } from '@/cesiumTool/drawPolygen';
 
-const isDrawing = ref(false);
+type ActiveMode = 'idle' | 'path' | 'area';
+
+const activeMode = ref<ActiveMode>('idle');
 const flightSummary = ref('');
-let drawAction: DrawFlightPathAction | null = null;
+const areaSummary = ref('');
+
+let flightPathAction: DrawFlightPathAction | null = null;
+let polygonAction: DrawPolygonAction | null = null;
+
+const activeTip = computed(() => {
+  if (activeMode.value === 'path') {
+    return '正在规划无人机路径：左键依次落点并自动连线，右键结束本次规划。';
+  }
+
+  if (activeMode.value === 'area') {
+    return '正在测量面积：左键依次绘制地块顶点，右键结束并计算面积。';
+  }
+
+  return '可选择“规划无人机路径”或“测量面积”，两种工具互不影响。';
+});
+
+const stopAllDrawing = () => {
+  flightPathAction?.deactivate();
+  polygonAction?.deactivate();
+  activeMode.value = 'idle';
+};
 
 const startDrawFlightPath = () => {
-  if (!drawAction || isDrawing.value) return;
+  if (!flightPathAction) return;
 
-  isDrawing.value = true;
+  stopAllDrawing();
+  activeMode.value = 'path';
   flightSummary.value = '正在规划中，请继续左键落点，右键结束。';
 
-  drawAction.activate((result: DrawFlightPathResult) => {
+  flightPathAction.activate((result: DrawFlightPathResult) => {
     console.log('--- 无人机路径规划完成 ---');
     console.log('1. 航线顶点坐标:', result.vertices);
     console.log('2. 航线长度(米):', result.lengthMeter);
     console.log('3. 航线长度(公里):', result.lengthKilometer);
 
     flightSummary.value = `已完成 ${result.vertices.length} 个航点规划，总航线长度约 ${result.lengthMeter} 米。`;
-    alert(`路径规划完成\n航点数量: ${result.vertices.length}\n航线长度: ${result.lengthMeter} 米`);
-    isDrawing.value = false;
+    activeMode.value = 'idle';
+  });
+};
+
+const startMeasureArea = () => {
+  if (!polygonAction) return;
+
+  stopAllDrawing();
+  activeMode.value = 'area';
+  areaSummary.value = '正在测量中，请继续左键画点成面，右键结束。';
+
+  polygonAction.activate((result: DrawPolygonResult) => {
+    console.log('--- 面积测量完成 ---');
+    console.log('1. 面积顶点坐标:', result.vertices);
+    console.log('2. 面积(平方米):', result.areaMeter);
+    console.log('3. 面积(亩):', result.areaMu);
+
+    areaSummary.value = `已完成 ${result.vertices.length} 个顶点测量，面积约 ${result.areaMeter.toFixed(2)} 平方米 / ${result.areaMu} 亩。`;
+    activeMode.value = 'idle';
   });
 };
 
@@ -62,12 +115,13 @@ onMounted(() => {
       }
     });
 
-    drawAction = new DrawFlightPathAction(viewer);
+    flightPathAction = new DrawFlightPathAction(viewer);
+    polygonAction = new DrawPolygonAction(viewer);
   }
 });
 
 onUnmounted(() => {
-  drawAction?.deactivate();
+  stopAllDrawing();
   if (viewer) {
     viewer.destroy();
   }
@@ -93,6 +147,7 @@ onUnmounted(() => {
   z-index: 999;
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .action-btn {
@@ -114,6 +169,14 @@ onUnmounted(() => {
   background-color: #115e59;
 }
 
+.area-btn {
+  background-color: #b45309;
+}
+
+.area-btn:hover {
+  background-color: #92400e;
+}
+
 .is-active {
   background-color: #fbbf24;
   color: #1f2937;
@@ -129,11 +192,11 @@ onUnmounted(() => {
   top: 84px;
   left: 20px;
   z-index: 999;
-  width: min(320px, calc(100vw - 40px));
+  width: min(360px, calc(100vw - 40px));
   padding: 14px 16px;
   color: #ecfeff;
   background: rgba(15, 23, 42, 0.78);
-  border: 1px solid rgba(34, 211, 238, 0.35);
+  border: 1px solid rgba(148, 163, 184, 0.35);
   border-radius: 12px;
   backdrop-filter: blur(10px);
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.25);
@@ -153,7 +216,14 @@ onUnmounted(() => {
 
 .result-text {
   margin-top: 8px;
+}
+
+.path-result {
   color: #67e8f9;
+}
+
+.area-result {
+  color: #fde68a;
 }
 
 @keyframes pulse {
